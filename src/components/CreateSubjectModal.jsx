@@ -98,6 +98,7 @@ const CreateSubjectModal = (prop) => {
         setShowCreateModal(false);
         setSubject({
             name: "",
+            id: "",
             groups: [
                 {
                     groupId: "",

@@ -7,6 +7,7 @@ import { IoIosRemoveCircle } from "react-icons/io";
 
 const EditSubjectModal = (prop) => {
     const { editSubjectId, setEditSubjectId, showEditModal, setShowEditModal } = prop;
+    const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
 
     const dispatch = useDispatch();
     let subjects = useSelector((state) => state.subjects);
@@ -120,6 +121,14 @@ const EditSubjectModal = (prop) => {
         handleHideModal();
     };
 
+    const deleteSubject = () => {
+        let updatedSubjects = [...subjects];
+        updatedSubjects = updatedSubjects.filter((subject) => subject.id !== editSubjectId);
+        dispatch(setSubjects(updatedSubjects));
+        handleHideModal();
+        setShowConfirmDeleteModal(false);
+    }
+
     const handleHideModal = () => {
         setShowEditModal(false);
         setSubject({
@@ -135,6 +144,7 @@ const EditSubjectModal = (prop) => {
         });
         setEditSubjectId("");
     }
+
     return (
         <>
             <Modal size="lg" show={showEditModal} onHide={handleHideModal} aria-labelledby="contained-modal-title-vcenter">
@@ -264,9 +274,25 @@ const EditSubjectModal = (prop) => {
                 </Modal.Body>
                 <Modal.Footer>
                     <div className="d-flex gap-2">
-                        <Button variant="primary" form='createSubjectForm' type="submit">Lưu</Button>
+                        <Button variant="danger" onClick={() => { setShowConfirmDeleteModal(true) }}>Xóa môn</Button>
                         <Button variant="secondary" onClick={handleHideModal}>Đóng</Button>
+                        <Button variant="primary" form='createSubjectForm' type="submit">Lưu</Button>
                     </div>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showConfirmDeleteModal} onHide={() => { setShowConfirmDeleteModal(false) }} >
+                <Modal.Header closeButton className='bg-orange-color '>
+                    <Modal.Title><strong>Xác nhận xóa môn học</strong></Modal.Title>
+                </Modal.Header>
+                <Modal.Body className='bg-orange-color '>Bạn có xác nhận xóa môn học này không?</Modal.Body>
+                <Modal.Footer className='bg-orange-color '>
+                    <Button variant="secondary" onClick={() => { setShowConfirmDeleteModal(false) }}>
+                        Không xóa
+                    </Button>
+                    <Button variant="primary" onClick={deleteSubject}>
+                        Chắc chắn xóa
+                    </Button>
                 </Modal.Footer>
             </Modal>
         </>

@@ -22,41 +22,6 @@ a {
   font-weight: 600;
 }
 
-.app-btn {
-  background-color: #147a81;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 20px;
-}
-
-.app-btn-danger {
-  background-color: #c00d0d;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 20px;
-}
-
-.app-btn-danger:hover {
-  background-color: #da3333;
-}
-
-.text-editor {
-  height: 70vh;
-  overflow-y: scroll;
-  scroll-behavior: smooth;
-  border: 1px solid black;
-  padding: 20px 10px;
-  outline: none;
-}
-
-div[contenteditable] {
-  border-right: none !important;
-  border-left: none !important;
-  border-bottom: none !important;
-}
-
 .remove-group-button {
   color: #f39c12;
   font-size: 25px;
