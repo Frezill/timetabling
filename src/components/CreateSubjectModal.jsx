@@ -4,6 +4,9 @@ import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSubjects } from '../redux/state';
 import { IoIosRemoveCircle } from "react-icons/io";
+import _ from 'lodash';
+import { toast } from 'react-toastify';
+import { checkValidSubjectId } from '../service/service';
 
 const CreateSubjectModal = (prop) => {
     const { showCreateModal, setShowCreateModal } = prop;
@@ -28,16 +31,18 @@ const CreateSubjectModal = (prop) => {
 
     const handleGroupChange = (groupIndex, e) => {
         const { name, value } = e.target;
-        const newGroups = [...subject.groups];
-        newGroups[groupIndex][name] = value;
-        setSubject((prev) => ({ ...prev, groups: newGroups }));
+
+        const newSubject = _.cloneDeep(subject);
+        newSubject.groups[groupIndex][name] = value;
+
+        setSubject(newSubject);
     };
 
     const handleSessionChange = (groupIndex, sessionIndex, e) => {
         const { name, value } = e.target;
-        const newGroups = [...subject.groups];
-        newGroups[groupIndex].sessions[sessionIndex][name] = value;
-        setSubject((prev) => ({ ...prev, groups: newGroups }));
+        let newSubject = _.cloneDeep(subject);
+        newSubject.groups[groupIndex].sessions[sessionIndex][name] = value;
+        setSubject(newSubject);
     };
 
     const addGroup = () => {
@@ -56,42 +61,53 @@ const CreateSubjectModal = (prop) => {
     };
 
     const addSession = (groupIndex) => {
-        const newGroups = [...subject.groups];
-        newGroups[groupIndex].sessions.push({ date: "", startTime: "", endTime: "" });
-        setSubject((prev) => ({ ...prev, groups: newGroups }));
+        const newSubject = _.cloneDeep(subject);
+        newSubject.groups[groupIndex].sessions.push({ date: "", startTime: "", endTime: "" });
+
+        setSubject(newSubject);
     };
 
+
     const removeSession = (groupIndex, sessionIndex) => {
-        const newGroups = [...subject.groups];
-        newGroups[groupIndex].sessions.splice(sessionIndex, 1);
-        if (newGroups[groupIndex].sessions.length === 0) {
-            // Nếu xoá hết session thì thêm 1 session rỗng để tránh lỗi render
-            newGroups[groupIndex].sessions.push({ date: "", startTime: "", endTime: "" });
+        const newSubject = _.cloneDeep(subject);
+        newSubject.groups[groupIndex].sessions.splice(sessionIndex, 1);
+
+        if (newSubject.groups[groupIndex].sessions.length === 0) {
+            newSubject.groups[groupIndex].sessions.push({ date: "", startTime: "", endTime: "" });
         }
-        setSubject((prev) => ({ ...prev, groups: newGroups }));
+
+        setSubject(newSubject);
     };
 
     const removeGroup = (groupIndex) => {
-        const newGroups = [...subject.groups];
-        newGroups.splice(groupIndex, 1);
-        if (newGroups.length === 0) {
-            // Nếu xoá hết nhóm thì thêm 1 nhóm rỗng để tránh lỗi render
-            newGroups.push({
+        const newSubject = _.cloneDeep(subject);
+        newSubject.groups.splice(groupIndex, 1);
+
+        if (newSubject.groups.length === 0) {
+            newSubject.groups.push({
                 groupId: "",
                 sessions: [{ date: "", startTime: "", endTime: "" }]
             });
         }
-        setSubject((prev) => ({ ...prev, groups: newGroups }));
+
+        setSubject(newSubject);
     };
 
 
     const dispatch = useDispatch();
     let subjects = useSelector((state) => state.subjects);
+
     const handleSubmit = (event) => {
         event.preventDefault();
         if (subjects == null) subjects = [];
-        dispatch(setSubjects([...subjects, subject]))
+        let newSubjects = _.cloneDeep(subjects);
+        if (!checkValidSubjectId(subject.id, newSubjects)) {
+            toast.error("Mã môn đã tồn tại!");
+            return;
+        }
+        dispatch(setSubjects([...newSubjects, subject]));
         handleHideModal();
+        toast.success("Thêm môn học thành công!");
     };
 
     const handleHideModal = () => {

@@ -4,6 +4,8 @@ import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSubjects } from '../redux/state';
 import { IoIosRemoveCircle } from "react-icons/io";
+import { toast } from 'react-toastify';
+import _ from 'lodash';
 
 const EditSubjectModal = (prop) => {
     const { editSubjectId, setEditSubjectId, showEditModal, setShowEditModal } = prop;
@@ -54,16 +56,19 @@ const EditSubjectModal = (prop) => {
 
     const handleGroupChange = (groupIndex, e) => {
         const { name, value } = e.target;
-        const newGroups = [...subject.groups];
-        newGroups[groupIndex][name] = value;
-        setSubject((prev) => ({ ...prev, groups: newGroups }));
+
+        const newSubject = _.cloneDeep(subject);
+        newSubject.groups[groupIndex][name] = value;
+
+        setSubject(newSubject);
     };
+
 
     const handleSessionChange = (groupIndex, sessionIndex, e) => {
         const { name, value } = e.target;
-        const newGroups = [...subject.groups];
-        newGroups[groupIndex].sessions[sessionIndex][name] = value;
-        setSubject((prev) => ({ ...prev, groups: newGroups }));
+        let newSubject = _.cloneDeep(subject);
+        newSubject.groups[groupIndex].sessions[sessionIndex][name] = value;
+        setSubject(newSubject);
     };
 
     const addGroup = () => {
@@ -82,43 +87,48 @@ const EditSubjectModal = (prop) => {
     };
 
     const addSession = (groupIndex) => {
-        const newGroups = [...subject.groups];
-        newGroups[groupIndex].sessions.push({ date: "", startTime: "", endTime: "" });
-        setSubject((prev) => ({ ...prev, groups: newGroups }));
+        const newSubject = _.cloneDeep(subject);
+        newSubject.groups[groupIndex].sessions.push({ date: "", startTime: "", endTime: "" });
+
+        setSubject(newSubject);
     };
 
     const removeSession = (groupIndex, sessionIndex) => {
-        const newGroups = [...subject.groups];
-        newGroups[groupIndex].sessions.splice(sessionIndex, 1);
-        if (newGroups[groupIndex].sessions.length === 0) {
-            // Nếu xoá hết session thì thêm 1 session rỗng để tránh lỗi render
-            newGroups[groupIndex].sessions.push({ date: "", startTime: "", endTime: "" });
+        const newSubject = _.cloneDeep(subject);
+        newSubject.groups[groupIndex].sessions.splice(sessionIndex, 1);
+
+        if (newSubject.groups[groupIndex].sessions.length === 0) {
+            newSubject.groups[groupIndex].sessions.push({ date: "", startTime: "", endTime: "" });
         }
-        setSubject((prev) => ({ ...prev, groups: newGroups }));
+
+        setSubject(newSubject);
     };
 
     const removeGroup = (groupIndex) => {
-        const newGroups = [...subject.groups];
-        newGroups.splice(groupIndex, 1);
-        if (newGroups.length === 0) {
-            // Nếu xoá hết nhóm thì thêm 1 nhóm rỗng để tránh lỗi render
-            newGroups.push({
+        const newSubject = _.cloneDeep(subject);
+        newSubject.groups.splice(groupIndex, 1);
+
+        if (newSubject.groups.length === 0) {
+            newSubject.groups.push({
                 groupId: "",
                 sessions: [{ date: "", startTime: "", endTime: "" }]
             });
         }
-        setSubject((prev) => ({ ...prev, groups: newGroups }));
+
+        setSubject(newSubject);
     };
+
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        const updatedSubjects = [...subjects];
+        let updatedSubjects = [...subjects];
         let subjectIndex = subjects.findIndex(obj => obj.id == editSubjectId);
         if (subjectIndex !== -1) {
             updatedSubjects[subjectIndex] = { ...subject };
             dispatch(setSubjects(updatedSubjects));
         }
         handleHideModal();
+        toast.success("Cập nhật môn học thành công!");
     };
 
     const deleteSubject = () => {
@@ -127,12 +137,14 @@ const EditSubjectModal = (prop) => {
         dispatch(setSubjects(updatedSubjects));
         handleHideModal();
         setShowConfirmDeleteModal(false);
+        toast.success("Xóa môn học thành công!");
     }
 
     const handleHideModal = () => {
         setShowEditModal(false);
         setSubject({
             name: "",
+            id: "",
             groups: [
                 {
                     groupId: "",

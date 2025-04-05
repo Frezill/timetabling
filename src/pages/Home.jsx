@@ -5,12 +5,11 @@ import Button from 'react-bootstrap/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSchedules, setSubjects } from '../redux/state';
 import EditSubjectModal from '../components/EditSubjectModal';
-import { find_all_valid_schedules } from '../service/main';
+import { findAllSchedules } from '../service/service';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Home = () => {
-
-    // const [subjects, setSubjects] = useState([]);
 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -30,19 +29,19 @@ const Home = () => {
     }
 
     const generateSchedules = () => {
-        const valid_schedules = find_all_valid_schedules(subjects);
-        dispatch(setSchedules(valid_schedules));
-        navigate("/schedules");
-        console.log(valid_schedules);
-        console.log(subjects);
-
-
+        const validSchedules = findAllSchedules(subjects);
+        dispatch(setSchedules(validSchedules));
+        if (validSchedules.length === 0) {
+            toast.error("Không có thời khóa biểu nào hợp lệ!");
+        } else {
+            navigate("/schedules");
+        }
     }
 
     return (
         <>
             <div className='page py-2'>
-                <div className="manage-subject container">
+                <div className="manage-subject container mb-4">
                     <div className="py-3 d-flex justify-content-between align-items-center">
                         <div className='d-flex gap-3'>
                             <Button variant="primary" onClick={() => { setShowCreateModal(true) }}>+ Thêm môn học</Button>
