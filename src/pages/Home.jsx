@@ -11,9 +11,11 @@ import { toast } from 'react-toastify';
 
 const Home = () => {
 
+
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editSubjectId, setEditSubjectId] = useState("");
+    const [selectedSubjects, setSelectedSubjects] = useState([]);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -21,6 +23,7 @@ const Home = () => {
 
     const clearData = () => {
         dispatch(setSubjects([]));
+        setSelectedSubjects([]);
     }
 
     const handleEditSubject = (subjectId) => {
@@ -28,8 +31,17 @@ const Home = () => {
         setShowEditModal(true);
     }
 
+    const handleSelectSubject = (subjectId) => {
+        setSelectedSubjects((prev) =>
+            prev.includes(subjectId)
+                ? prev.filter(id => id !== subjectId)
+                : [...prev, subjectId]
+        );
+    }
+
     const generateSchedules = () => {
-        const validSchedules = findAllSchedules(subjects);
+        const filteredSubjects = subjects.filter(subject => selectedSubjects.includes(subject.id));
+        const validSchedules = findAllSchedules(filteredSubjects);
         dispatch(setSchedules(validSchedules));
         if (validSchedules.length === 0) {
             toast.error("Không có thời khóa biểu nào hợp lệ!");
@@ -37,6 +49,14 @@ const Home = () => {
             navigate("/schedules");
         }
     }
+
+    React.useEffect(() => {
+        if (subjects && subjects.length > 0) {
+            setSelectedSubjects(subjects.map(subject => subject.id));
+        } else {
+            setSelectedSubjects([]);
+        }
+    }, [subjects]);
 
     return (
         <>
@@ -52,8 +72,17 @@ const Home = () => {
                     <div className="subject-list row gap-3 align-items-center justify-content-center">
                         {
                             subjects && subjects.length > 0 && subjects.map((subject, index) => (
-                                <div className='subject-card col-11' style={{ cursor: "pointer" }} key={index} onClick={() => handleEditSubject(subject.id)}>
-                                    <SubjectInformation subject={subject} />
+                                <div className='subject-card col-11 d-flex align-items-center' style={{ cursor: "pointer" }} key={index}>
+                                    <input
+                                        type="checkbox"
+                                        className="form-check-input me-3"
+                                        checked={selectedSubjects.includes(subject.id)}
+                                        onChange={() => handleSelectSubject(subject.id)}
+                                        onClick={e => e.stopPropagation()}
+                                    />
+                                    <div style={{ flex: 1 }} onClick={() => handleEditSubject(subject.id)}>
+                                        <SubjectInformation subject={subject} />
+                                    </div>
                                 </div>
                             ))
                         }

@@ -210,7 +210,7 @@ const EditSubjectModal = (prop) => {
                                         name='groupId'
                                         value={group.groupId}
                                         onChange={(e) => handleGroupChange(groupIndex, e)}
-                                        placeholder='Group ID'
+                                        placeholder='Mã nhóm'
                                         required
                                     />
                                 </div>
