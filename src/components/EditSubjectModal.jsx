@@ -202,17 +202,31 @@ const EditSubjectModal = (prop) => {
                                         <IoIosRemoveCircle onClick={() => { removeGroup(groupIndex) }} />
                                     </div>
                                 </div>
-                                <div className="mb-2">
-                                    <label className="form-label">Mã nhóm</label>
-                                    <input
-                                        type="text"
-                                        className='form-control'
-                                        name='groupId'
-                                        value={group.groupId}
-                                        onChange={(e) => handleGroupChange(groupIndex, e)}
-                                        placeholder='Mã nhóm'
-                                        required
-                                    />
+                                <div className="row mb-2">
+                                    <div className="col-6">
+                                        <label className="form-label">Mã nhóm</label>
+                                        <input
+                                            type="text"
+                                            className='form-control'
+                                            name='groupId'
+                                            value={group.groupId}
+                                            onChange={(e) => handleGroupChange(groupIndex, e)}
+                                            placeholder='Mã nhóm'
+                                            required
+                                        />
+                                    </div>
+                                    <div className="col-6">
+                                        <label className="form-label">Giảng viên phụ trách</label>
+                                        <input
+                                            type="text"
+                                            className='form-control'
+                                            name='teacher'
+                                            value={group.teacher || ""}
+                                            onChange={(e) => handleGroupChange(groupIndex, e)}
+                                            placeholder='Tên giảng viên'
+                                            required
+                                        />
+                                    </div>
                                 </div>
 
                                 {group.sessions.map((session, sessionIndex) => (
