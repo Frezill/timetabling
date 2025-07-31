@@ -69,10 +69,14 @@ const Home = () => {
                         </div>
                         <Button variant="danger" onClick={() => { clearData() }}> Xóa tất cả</Button>
                     </div>
-                    <div className="subject-list row gap-3 align-items-center justify-content-center">
-                        {
-                            subjects && subjects.length > 0 && subjects.map((subject, index) => (
-                                <div className='subject-card col-11 d-flex align-items-center' style={{ cursor: "pointer" }} key={index}>
+                    <div className="subject-list row gap-3 align-items-start justify-content-center">
+                        {subjects && subjects.length > 0 &&
+                            subjects.map((subject, index) => (
+                                <div
+                                    className="subject-card col-12 col-md-5 d-flex align-items-center mb-3"
+                                    style={{ cursor: "pointer", minHeight: "120px" }}
+                                    key={index}
+                                >
                                     <input
                                         type="checkbox"
                                         className="form-check-input me-3"
